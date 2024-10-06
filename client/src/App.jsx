@@ -7,11 +7,13 @@ import SignUp from './pages/SignUp'
 import Dashboard from './pages/Dashboard'
 import Internships from './pages/Internships'
 import Placements from './pages/Placements'
+import Header from './components/Header';
 
 
 export default function App() {
   return (
     <BrowserRouter >
+      <Header />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/about' element={<About />} />
