@@ -8,7 +8,7 @@ import Dashboard from './pages/Dashboard'
 import Internships from './pages/Internships'
 import Placements from './pages/Placements'
 import Header from './components/Header';
-
+import Footer from './components/Footer';
 
 export default function App() {
   return (
@@ -23,6 +23,7 @@ export default function App() {
         <Route path='/internships' element={<Internships />} />
         <Route path='/placements' element={<Placements />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   )
 }
