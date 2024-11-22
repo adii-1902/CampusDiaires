@@ -9,6 +9,7 @@ import Internships from './pages/Internships'
 import Placements from './pages/Placements'
 import Header from './components/Header';
 import Footer from './components/Footer';
+import PrivateRoute from './components/PrivateRoute';
 
 export default function App() {
   return (
@@ -19,7 +20,9 @@ export default function App() {
         <Route path='/about' element={<About />} />
         <Route path='/sign-in' element={<SignIn />} />
         <Route path='/sign-up' element={<SignUp />} />
-        <Route path='/dashboard' element={<Dashboard />} />
+        <Route element={<PrivateRoute />}>
+          <Route path='/dashboard' element={<Dashboard />} />
+        </Route>
         <Route path='/internships' element={<Internships />} />
         <Route path='/placements' element={<Placements />} />
       </Routes>
