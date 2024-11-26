@@ -20,7 +20,7 @@ export const signup = async (req, res, next) => {
     try {
         await newUser.save();
         const validUser = await User.findOne({ email });
-        const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+        const token = jwt.sign({ id: validUser._id, isAdmin: validUser.isAdmin, canPost: validUser.canPost }, process.env.JWT_SECRET);
         const { password: pass, ...rest } = validUser._doc;
 
         res.status(200).cookie('access_token', token, {
@@ -30,6 +30,8 @@ export const signup = async (req, res, next) => {
         next(error);
     }
 };
+
+
 export const signin = async (req, res, next) => {
     const { email, password } = req.body;
 
@@ -45,7 +47,7 @@ export const signin = async (req, res, next) => {
         if (!validPassword) {
             return next(errorHandler(400, 'Invalid password'));
         }
-        const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+        const token = jwt.sign({ id: validUser._id, isAdmin: validUser.isAdmin, canPost: validUser.canPost }, process.env.JWT_SECRET);
         const { password: pass, ...rest } = validUser._doc;
 
         res.status(200).cookie('access_token', token, {
@@ -61,7 +63,7 @@ export const google = async (req, res, next) => {
     try {
         const user = await User.findOne({ email });
         if (user) {
-            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+            const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin, canPost: user.canPost }, process.env.JWT_SECRET);
             const { password, ...rest } = user._doc;
             res.status(200).cookie('access_token', token, {
                 httpOnly: true,
@@ -77,7 +79,7 @@ export const google = async (req, res, next) => {
                 profilePicture: googlePhotoUrl,
             });
             await newUser.save();
-            const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+            const token = jwt.sign({ id: newUser._id, isAdmin: newUser.isAdmin, canPost: newUser.canPost }, process.env.JWT_SECRET);
             const { password, ...rest } = newUser._doc;
             res.status(200).cookie('access_token', token, {
                 httpOnly: true,
