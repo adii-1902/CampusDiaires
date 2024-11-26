@@ -76,6 +76,7 @@ export default function DashProfile() {
         e.preventDefault();
         setUpdateUserError(null);
         setUpdateUserSuccess(null);
+        setImageFileUploadProgress(null);
         if (Object.keys(formData).length === 0) {
             setUpdateUserError('No changes made.');
             return;
