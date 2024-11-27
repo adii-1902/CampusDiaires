@@ -10,6 +10,8 @@ import Placements from './pages/Placements'
 import Header from './components/Header';
 import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
+import CanPostPrivateRoute from './components/CanPostPrivateRoute';
+import CreatePost from './pages/CreatePost';
 
 export default function App() {
   return (
@@ -22,6 +24,9 @@ export default function App() {
         <Route path='/sign-up' element={<SignUp />} />
         <Route element={<PrivateRoute />}>
           <Route path='/dashboard' element={<Dashboard />} />
+        </Route>
+        <Route element={<CanPostPrivateRoute />}>
+          <Route path='/create-post' element={<CreatePost />} />
         </Route>
         <Route path='/internships' element={<Internships />} />
         <Route path='/placements' element={<Placements />} />
