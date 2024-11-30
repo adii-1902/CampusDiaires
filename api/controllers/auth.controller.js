@@ -19,13 +19,7 @@ export const signup = async (req, res, next) => {
 
     try {
         await newUser.save();
-        const validUser = await User.findOne({ email });
-        const token = jwt.sign({ id: validUser._id, isAdmin: validUser.isAdmin, canPost: validUser.canPost }, process.env.JWT_SECRET);
-        const { password: pass, ...rest } = validUser._doc;
-
-        res.status(200).cookie('access_token', token, {
-            httpOnly: true
-        }).json(rest);
+        res.json('Signup successful!');
     } catch (error) {
         next(error);
     }
