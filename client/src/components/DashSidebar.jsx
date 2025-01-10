@@ -46,12 +46,22 @@ export default function DashSidebar() {
                         </Sidebar.Item>
                     </Link>
                     {
-                        currentUser.isAdmin && (<Link to='/dashboard?tab=posts'>
+                        (currentUser.canPost || currentUser.isAdmin) && (<Link to='/dashboard?tab=posts'>
                             <Sidebar.Item
                                 active={tab === 'posts'}
                                 icon={HiDocumentText}
                                 as='div'>
-                                Posts
+                                My Posts
+                            </Sidebar.Item>
+                        </Link>)
+                    }
+                    {
+                        currentUser.isAdmin && (<Link to='/dashboard?tab=allposts'>
+                            <Sidebar.Item
+                                active={tab === 'allposts'}
+                                icon={HiDocumentText}
+                                as='div'>
+                                All Posts
                             </Sidebar.Item>
                         </Link>)
                     }
