@@ -12,6 +12,7 @@ import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
 import CanPostPrivateRoute from './components/CanPostPrivateRoute';
 import CreatePost from './pages/CreatePost';
+import UpdatePost from './pages/UpdatePost';
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         </Route>
         <Route element={<CanPostPrivateRoute />}>
           <Route path='/create-post' element={<CreatePost />} />
+          <Route path='/update-post/:postId' element={<UpdatePost />} />
         </Route>
         <Route path='/internships' element={<Internships />} />
         <Route path='/placements' element={<Placements />} />
