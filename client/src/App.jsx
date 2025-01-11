@@ -13,6 +13,7 @@ import PrivateRoute from './components/PrivateRoute';
 import CanPostPrivateRoute from './components/CanPostPrivateRoute';
 import CreatePost from './pages/CreatePost';
 import UpdatePost from './pages/UpdatePost';
+import PostPage from './pages/PostPage';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
         </Route>
         <Route path='/internships' element={<Internships />} />
         <Route path='/placements' element={<Placements />} />
+        <Route path='/post/:postSlug' element={<PostPage />} />
       </Routes>
       <Footer />
     </BrowserRouter>
