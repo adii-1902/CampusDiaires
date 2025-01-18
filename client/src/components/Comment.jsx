@@ -9,6 +9,7 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
     const { currentUser } = useSelector((state) => state.user);
     const [isEditing, setIsEditing] = useState(false);
     const [editedContent, setEditedContent] = useState(comment.content);
+    const [access, setAccess] = useState({});
     useEffect(() => {
         const getUser = async () => {
             try {
@@ -23,6 +24,7 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
         }
         getUser();
     }, [comment]);
+
     const handleEdit = async () => {
         setIsEditing(true);
         setEditedContent(comment.content)
@@ -47,6 +49,26 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
             console.log(error.message);
         }
     };
+
+    const fetchUsersAccess = async () => {
+        try {
+            const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
+                method: 'GET',
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setAccess(data.access);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
+
+    useEffect(() => {
+        if (currentUser) {
+            fetchUsersAccess();
+        }
+    }, [currentUser]);
 
     return (
         <div className='flex p-4 border-b dark:border-gray-600 text-sm'>
@@ -93,11 +115,11 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
                                 </button>
                                 <p className='text-gray-400'>
                                     {
-                                        comment.numberOfLikes > 0 && comment.numberOfLikes + " " + (comment.numberOfLikes === 1 ? "like" : likes)
+                                        comment.numberOfLikes > 0 && comment.numberOfLikes + " " + (comment.numberOfLikes === 1 ? "like" : 'likes')
                                     }
                                 </p>
                                 {
-                                    currentUser && (currentUser._id === comment.userId || currentUser.isAdmin) && (
+                                    currentUser && (currentUser._id === comment.userId || access.adminAceess) && (
                                         <>
                                             <button
                                                 type='button'

@@ -15,6 +15,7 @@ export default function DashboardComponent() {
     const [lastMonthComments, setLastMonthComments] = useState(0);
     const [lastMonthPosts, setLastMonthPosts] = useState(0);
     const { currentUser } = useSelector((state) => state.user);
+    const [access, setAccess] = useState({});
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -59,10 +60,34 @@ export default function DashboardComponent() {
             }
 
         }
-        if (currentUser.isAdmin) {
+        if (access.adminAceess) {
             fetchUsers();
             fetchPosts();
             fetchComments();
+        }
+    }, [currentUser, access]);
+
+
+    const fetchUsersAccess = async () => {
+        try {
+            const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
+                method: 'GET',
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.log(data.message);
+            }
+            else {
+                setAccess(data.access);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
+
+    useEffect(() => {
+        if (currentUser) {
+            fetchUsersAccess();
         }
     }, [currentUser]);
     return (
@@ -214,7 +239,7 @@ export default function DashboardComponent() {
                                 <Table.Body key={post._id} className='divide-y'>
                                     <Table.Row className='bg-white dark:border-gray-700 dark:bg-gray-800'>
                                         <Table.Cell>
-                                            <img src='https://i.postimg.cc/DzY3VfBN/101.png' alt="postPic" className='w-10 h-10 rounded-full bg-gray-500' />
+                                            <img src={post?.user?.profilePicture} alt="postPic" className='w-10 h-10 rounded-full bg-gray-500' />
                                         </Table.Cell>
                                         <Table.Cell className='w-96'>{post.title}</Table.Cell>
                                         <Table.Cell className='w-5'>{post.category}</Table.Cell>

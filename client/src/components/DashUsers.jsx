@@ -2,15 +2,14 @@ import { Button, Modal, Table } from 'flowbite-react';
 import React, { Children, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
-import { FaCheck, FaTimes } from 'react-icons/fa';
 
 export default function DashUsers() {
     const { currentUser } = useSelector((state) => state.user);
     const [users, setUsers] = useState([]);
-    // console.log(userPosts);
     const [showMore, setShowMore] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [userIdToDelete, setUserIdToDelete] = useState('');
+    const [access, setAccess] = useState({});
     useEffect(() => {
         const fetchUsers = async () => {
             try {
@@ -26,10 +25,10 @@ export default function DashUsers() {
                 console.log(error.message);
             }
         };
-        if (currentUser.isAdmin) {
+        if (access.adminAceess) {
             fetchUsers();
         }
-    }, [currentUser._id]);
+    }, [currentUser._id, access]);
 
     const handleShowMore = async () => {
         const startIndex = users.length;
@@ -65,18 +64,59 @@ export default function DashUsers() {
         }
     };
 
+    const fetchUsersAccess = async () => {
+        try {
+            const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
+                method: 'GET',
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.log(data.message);
+            }
+            else {
+                setAccess(data.access);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
+
+    useEffect(() => {
+        if (currentUser) {
+            fetchUsersAccess();
+        }
+    }, [currentUser]);
+
+    const handleTogglePostAccess = async (userId) => {
+        try {
+            const res = await fetch(`/api/user/updateUserAccess/${userId}`, {
+                method: 'PUT',
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.log(data.message);
+            }
+            else {
+                setUsers((prev) => prev.map((user) => user._id === userId ? { ...user, canPost: !user.canPost } : user));
+            }
+        } catch (error) {
+            console.log(error.message);
+        };
+    };
+
     return (
         <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
             {
-                currentUser.isAdmin && users.length > 0 ? (
+                access.adminAceess && users.length > 0 ? (
                     <>
+
                         <Table hoverable className='shadow-md'>
                             <Table.Head>
                                 <Table.HeadCell>Date created</Table.HeadCell>
                                 <Table.HeadCell>user image</Table.HeadCell>
                                 <Table.HeadCell>username</Table.HeadCell>
                                 <Table.HeadCell>email</Table.HeadCell>
-                                <Table.HeadCell>can post</Table.HeadCell>
+                                <Table.HeadCell>post access</Table.HeadCell>
                                 <Table.HeadCell>delete</Table.HeadCell>
                             </Table.Head>
                             {
@@ -92,7 +132,12 @@ export default function DashUsers() {
                                                 </Table.Cell>
                                                 <Table.Cell>{user.username}</Table.Cell>
                                                 <Table.Cell>{user.email}</Table.Cell>
-                                                <Table.Cell>{user.canPost ? (<FaCheck className='text-green-500' />) : (<FaTimes className='text-red-500' />)}</Table.Cell>
+                                                <Table.Cell>
+                                                    <label className="switch">
+                                                        <input type="checkbox" checked={user.canPost} onChange={() => handleTogglePostAccess(user._id)} />
+                                                        <span className="slider round"></span>
+                                                    </label>
+                                                </Table.Cell>
                                                 <Table.Cell>
                                                     <span onClick={() => {
                                                         setShowModal(true);

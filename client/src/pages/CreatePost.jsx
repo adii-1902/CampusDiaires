@@ -3,20 +3,23 @@ import React, { useState } from 'react'
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 export default function CreatePost() {
     const [formData, setFormData] = useState({});
+    const { currentUser } = useSelector((state) => state.user);
     const [publishError, setPublishError] = useState(null);
     const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const updatedFormData = { ...formData, email: currentUser.email };
             const res = await fetch('/api/post/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(updatedFormData),
             });
             const data = await res.json();
             if (!res.ok) {
@@ -27,7 +30,6 @@ export default function CreatePost() {
                 setPublishError(null);
                 navigate(`/post/${data.slug}`);
             }
-            console.log(data);
         } catch (error) {
             setPublishError('Something went wrong!');
         }

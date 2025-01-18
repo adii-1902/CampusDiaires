@@ -52,7 +52,6 @@ export default function UpdatePost() {
                 setPublishError(null);
                 navigate(`/post/${data.slug}`);
             }
-            console.log(data);
         } catch (error) {
             setPublishError('Something went wrong!');
         }

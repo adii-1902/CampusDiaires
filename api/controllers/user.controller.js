@@ -114,3 +114,51 @@ export const getUser = async (req, res, next) => {
         next(error);
     }
 };
+
+
+export const getUserAccess = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user) {
+            return next(errorHandler(404, 'User not found!'));
+        }
+        let adminAceess = false;
+        let postAceess = false;
+        if (user.isAdmin) {
+            adminAceess = true;
+        }
+
+        if (user.canPost) {
+            postAceess = true;
+        }
+        const access = {
+            adminAceess,
+            postAceess
+        }
+        res.status(200).json({ access });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updateUserAccess = async (req, res, next) => {
+    if (!req.user.isAdmin) {
+        return next(errorHandler(403, 'You are not allowed to update user access.'));
+    }
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user) {
+            return next(errorHandler(404, 'User not found!'));
+        }
+        const updatedUser = await User.findByIdAndUpdate(req.params.userId, {
+            $set: {
+                isAdmin: req.body.isAdmin,
+                canPost: user.canPost ? false : true,
+            },
+        }, { new: true });
+        const { password, ...rest } = updatedUser._doc;
+        res.status(200).json(rest);
+    } catch (error) {
+        next(error);
+    }
+};

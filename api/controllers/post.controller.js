@@ -1,5 +1,6 @@
 import Post from "../models/post.model.js";
 import { errorHandler } from "../utils/error.js";
+import { sendEmail } from '../utils/emailService.js';
 
 export const create = async (req, res, next) => {
     if (!req.user.canPost) {
@@ -16,7 +17,107 @@ export const create = async (req, res, next) => {
     });
     try {
         const savedPost = await newPost.save();
+        const subject = 'Thank You for Your Post';
+        // const postUrl = `${process.env.CLIENT_DEV}/post/${savedPost.slug}`
+        const postUrl = `${process.env.CLIENT_PROD}/post/${savedPost.slug}`
+        const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You for Your Post</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333333;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .email-header {
+            background-color: #28a745;
+            padding: 20px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .email-body {
+            padding: 20px;
+        }
+        .email-body p {
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+        .email-footer {
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: #777777;
+        }
+        .email-footer a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>Campus Diaries</h1>
+        </div>
+        <div class="email-body">
+            <p>Dear User,</p>
+
+            <p>Thank you for sharing your post with CampusDiaries! We appreciate your contribution and look forward to seeing more amazing content from you.</p>
+
+            <p>Your post is now live and available for others to enjoy.</p>
+
+            <p><a href="${postUrl}" class="post-title">Click here to view your post</a></p>
+
+            <p>If you have any questions or need assistance, feel free to reach out to us.</p>
+
+            <p>Best regards,<br>Campus Diaries Team</p>
+        </div>
+        <div class="email-footer">
+            <p>Need help? Contact us at <a href="mailto:campusdiaries19@gmail.com">campusdiaries19@gmail.com</a>.</p>
+        </div>
+    </div>
+</body>
+</html>
+`;
+
+        await sendEmail(req.body.email, subject, htmlContent);
+
         res.status(201).json(savedPost);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getallposts = async (req, res, next) => {
+    try {
+        const startIndex = parseInt(req.query.startIndex) || 0;
+        const limit = parseInt(req.query.limit) || 10; // Default limit to 10
+        const sortDirection = req.query.order === 'asc' ? 1 : -1;
+
+        const posts = await Post.find()
+            .sort({ updatedAt: sortDirection })
+            .skip(startIndex)
+            .limit(limit);
+
+        res.status(200).json({ posts });
     } catch (error) {
         next(error);
     }
@@ -25,8 +126,10 @@ export const create = async (req, res, next) => {
 export const getposts = async (req, res, next) => {
     try {
         const startIndex = parseInt(req.query.startIndex) || 0;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 9;
         const sortDirection = req.query.order === 'asc' ? 1 : -1;
+        const myPosts = await Post.find({ userId: req.query.userId });
+
         const posts = await Post.find({
             ...(req.query.userId && { userId: req.query.userId }),
             ...(req.query.category && { category: req.query.category }),
@@ -39,7 +142,26 @@ export const getposts = async (req, res, next) => {
                     { content: { $regex: req.query.searchTerm, $options: 'i' } },
                 ],
             }),
-        }).sort({ updatedAt: sortDirection }).skip(startIndex).limit(limit);
+        })
+            .populate('userId', 'profilePicture')  // Populate the userId field and select only profilePicture
+            .sort({ updatedAt: sortDirection })
+            .skip(startIndex)
+            .limit(limit);
+
+
+        // Transform the posts to include the user object in the desired format
+        const transformedPosts = posts.map(post => {
+            const postObject = post.toObject();
+
+            return {
+                ...postObject,
+                user: {
+                    id: postObject.userId._id,
+                    profilePicture: postObject.userId.profilePicture
+                },
+                userId: undefined  // Remove the original userId field
+            };
+        });
 
         const totalPosts = await Post.countDocuments();
 
@@ -50,13 +172,12 @@ export const getposts = async (req, res, next) => {
             now.getDate()
         );
 
-
         const lastMonthPosts = await Post.countDocuments({
             createdAt: { $gte: oneMonthAgo },
         });
-        // console.log(posts);
+
         res.status(200).json({
-            posts,
+            posts: transformedPosts,
             lastMonthPosts,
             totalPosts,
         });
@@ -67,8 +188,6 @@ export const getposts = async (req, res, next) => {
 };
 
 export const deletepost = async (req, res, next) => {
-    // console.log('req.user:', req.user); // Debug user details
-    // console.log('req.params:', req.params); // Debug route parameters
     if ((!req.user.canPost && !req.user.isAdmin) || req.user.id !== req.params.userId) {
         return next(403, 'You are not allowed to delete this post.');
     }
@@ -98,3 +217,5 @@ export const updatepost = async (req, res, next) => {
         next(error);
     }
 };
+
+

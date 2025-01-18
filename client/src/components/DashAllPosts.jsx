@@ -1,24 +1,24 @@
 import { Button, Modal, Table } from 'flowbite-react';
 import React, { Children, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
-import { FaCheck, FaTimes } from 'react-icons/fa';
 
-export default function DashComments() {
+export default function DashAllPosts() {
     const { currentUser } = useSelector((state) => state.user);
-    const [comments, setComments] = useState([]);
+    const [userPosts, setUserPosts] = useState([]);
     const [showMore, setShowMore] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    const [commentIdToDelete, setCommentIdToDelete] = useState('');
+    const [postIdToDelete, setPostIdToDelete] = useState('');
     const [access, setAccess] = useState({});
     useEffect(() => {
-        const fetchComments = async () => {
+        const fetchPosts = async () => {
             try {
-                const res = await fetch(`/api/comment/getComments`);
+                const res = await fetch(`/api/post/getallposts`);
                 const data = await res.json();
                 if (res.ok) {
-                    setComments(data.comments);
-                    if (data.comments.length < 9) {
+                    setUserPosts(data.posts);
+                    if (data.posts.length < 10) {
                         setShowMore(false);
                     }
                 }
@@ -26,19 +26,19 @@ export default function DashComments() {
                 console.log(error.message);
             }
         };
-        if (access?.adminAceess) {
-            fetchComments();
+        if (access.postAceess) {
+            fetchPosts();
         }
     }, [currentUser._id, access]);
 
     const handleShowMore = async () => {
-        const startIndex = comments.length;
+        const startIndex = userPosts.length;
         try {
-            const res = await fetch(`/api/comment/getComments?startIndex=${startIndex}`);
+            const res = await fetch(`/api/post/getallposts?startIndex=${startIndex}`);
             const data = await res.json();
             if (res.ok) {
-                setCommentss((prev) => [...prev, ...data.comments]);
-                if (data.comments.length < 9) {
+                setUserPosts((prev) => [...prev, ...data.posts]);
+                if (data.posts.length < 10) {
                     setShowMore(false);
                 }
             }
@@ -47,22 +47,23 @@ export default function DashComments() {
         }
     };
 
-    const handleDeleteComment = async () => {
+    const handleDeletePost = async () => {
         setShowModal(false);
         try {
-            const res = await fetch(`api/comment/deleteComment/${commentIdToDelete}`, {
-                method: 'DELETE',
-            });
+            const res = await fetch(`/api/post/deletepost/${postIdToDelete}/${currentUser._id}`,
+                {
+                    method: 'DELETE',
+                }
+            );
             const data = await res.json();
-            if (res.ok) {
-                setComments((prev) => prev.filter((comment) => comment._id !== commentIdToDelete));
-                setShowModal(false);
-            }
-            else {
+            if (!res.ok) {
                 console.log(data.message);
             }
+            else {
+                setUserPosts((prev) => prev.filter((post) => post._id !== postIdToDelete));
+            }
         } catch (error) {
-            console.log(error.message);
+            console.log(error);
         }
     };
 
@@ -92,34 +93,42 @@ export default function DashComments() {
     return (
         <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
             {
-                access.adminAceess && comments.length > 0 ? (
+                access.postAceess && userPosts.length > 0 ? (
                     <>
                         <Table hoverable className='shadow-md'>
                             <Table.Head>
                                 <Table.HeadCell>Date updated</Table.HeadCell>
-                                <Table.HeadCell>Comment content</Table.HeadCell>
-                                <Table.HeadCell>number of likes</Table.HeadCell>
-                                <Table.HeadCell>username</Table.HeadCell>
-                                <Table.HeadCell>Post title</Table.HeadCell>
+                                <Table.HeadCell>Post Title</Table.HeadCell>
+                                <Table.HeadCell>Category</Table.HeadCell>
+                                <Table.HeadCell>Subcategory</Table.HeadCell>
                                 <Table.HeadCell>delete</Table.HeadCell>
+                                <Table.HeadCell>
+                                    <span>edit</span>
+                                </Table.HeadCell>
                             </Table.Head>
                             {
-                                comments.map((comment) => {
+                                userPosts.map((post) => {
                                     return (
-                                        <Table.Body className='divide-y' key={comment._id}>
+                                        <Table.Body className='divide-y' key={post._id}>
                                             <Table.Row className='bg-white dark:border-gray-700 dark:bg-gray-800'>
-                                                <Table.Cell>{new Date(comment.updatedAt).toLocaleDateString()}</Table.Cell>
+                                                <Table.Cell>{new Date(post.updatedAt).toLocaleDateString()}</Table.Cell>
                                                 <Table.Cell>
-                                                    {comment.content}
+                                                    <Link className='font-medium text-gray-900 dark:text-white' to={`/post/${post.slug}`}>{post.title}</Link>
                                                 </Table.Cell>
-                                                <Table.Cell>{comment.numberOfLikes}</Table.Cell>
-                                                <Table.Cell>{comment.userId?.username}</Table.Cell>
-                                                <Table.Cell>{comment.postId}</Table.Cell>
+                                                <Table.Cell>{post.category}</Table.Cell>
+                                                <Table.Cell>{post.subcategory}</Table.Cell>
                                                 <Table.Cell>
                                                     <span onClick={() => {
                                                         setShowModal(true);
-                                                        setCommentIdToDelete(comment._id);
+                                                        setPostIdToDelete(post._id);
                                                     }} className='font-medium text-red-500 hover:underline cursor-pointer'>Delete</span>
+                                                </Table.Cell>
+                                                <Table.Cell>
+                                                    <Link className='text-teal-500 hover:underline cursor-pointer' to={`/update-post/${post._id}`}>
+                                                        <span>
+                                                            Edit
+                                                        </span>
+                                                    </Link>
                                                 </Table.Cell>
                                             </Table.Row>
                                         </Table.Body>
@@ -132,7 +141,7 @@ export default function DashComments() {
                         }
                     </>
                 ) : (
-                    <p>You have no comments yet !</p>
+                    <p>You have no posts yet !</p>
                 )
             }
             <Modal show={showModal} onClick={() => { setShowModal(false) }} popup size='md'>
@@ -140,9 +149,9 @@ export default function DashComments() {
                 <Modal.Body>
                     <div className='text-center'>
                         <HiOutlineExclamationCircle className='h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto' />
-                        <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-400'>Are you sure you want to delete comment ?</h3>
+                        <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-400'>Are you sure you want to delete this post ?</h3>
                         <div className='flex justify-center gap-4'>
-                            <Button color='failure' onClick={handleDeleteComment}>Yes, I'm sure</Button>
+                            <Button color='failure' onClick={handleDeletePost}>Yes, I'm sure</Button>
                             <Button color='gray' onClick={() => { setShowModal(false) }}>No, cancel</Button>
                         </div>
                     </div>

@@ -14,7 +14,6 @@ export default function Header() {
     const dispatch = useDispatch();
     const { theme } = useSelector(state => state.theme);
     const [searchTerm, setSearchTerm] = useState('');
-    // console.log(searchTerm);
     const navigate = useNavigate();
 
     useEffect(() => {

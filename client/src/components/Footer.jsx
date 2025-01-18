@@ -18,36 +18,21 @@ export default function FooterCom() {
                     </div>
                     <div className='grid grid-cols-2 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6'>
                         <div>
-                            <Footer.Title title='About' />
-                            <Footer.LinkGroup col>
-                                <Footer.Link
-                                    href='#'
-                                >
-                                    #Link
-                                </Footer.Link>
-                                <Footer.Link
-                                    href='/about'
-                                    target='_blank'
-                                    rel='noopener noreferrer'
-                                >
-                                    #Link
-                                </Footer.Link>
-                            </Footer.LinkGroup>
-                        </div>
-                        <div>
                             <Footer.Title title='Follow us' />
                             <Footer.LinkGroup col>
                                 <Footer.Link
-                                    href='#'
-                                >
-                                    #Link
-                                </Footer.Link>
-                                <Footer.Link
-                                    href='/about'
+                                    href='https://github.com/adii-1902'
                                     target='_blank'
                                     rel='noopener noreferrer'
                                 >
-                                    #Link
+                                    Github
+                                </Footer.Link>
+                                <Footer.Link
+                                    href='https://www.linkedin.com/in/aditya-kumbhar-161730221/'
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                >
+                                    Linkedin
                                 </Footer.Link>
                             </Footer.LinkGroup>
                         </div>
@@ -55,13 +40,12 @@ export default function FooterCom() {
                             <Footer.Title title='Legal' />
                             <Footer.LinkGroup col>
                                 <Footer.Link
-                                    href='#'
+                                    href='/privacy'
                                 >
                                     Privacy Policy
                                 </Footer.Link>
                                 <Footer.Link
-                                    href='/about'
-                                    target='_blank'
+                                    href='/terms'
                                     rel='noopener noreferrer'
                                 >
                                     Terms &amp; Conditions
@@ -74,11 +58,9 @@ export default function FooterCom() {
                 <div className='w-full sm:flex sm:items-center sm:justify-between'>
                     <Footer.Copyright href='#' by='CampusDiaries' year={new Date().getFullYear()} />
                     <div className='flex gap-6 sm:mt-0 mt-4 sm:justify-center'>
-                        <Footer.Icon href='#' icon={BsFacebook} />
-                        <Footer.Icon href='#' icon={BsInstagram} />
-                        <Footer.Icon href='#' icon={BsGithub} />
-                        <Footer.Icon href='#' icon={BsTwitter} />
-                        <Footer.Icon href='#' icon={BsLinkedin} />
+                        <Footer.Icon target='_blank' rel='noopener noreferrer' href='https://www.instagram.com/_aditya1911/#' icon={BsInstagram} />
+                        <Footer.Icon target='_blank' rel='noopener noreferrer' href='https://github.com/adii-1902' icon={BsGithub} />
+                        <Footer.Icon target='_blank' rel='noopener noreferrer' href='https://www.linkedin.com/in/aditya-kumbhar-161730221/' icon={BsLinkedin} />
                     </div>
                 </div>
             </div>

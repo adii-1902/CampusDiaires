@@ -21,7 +21,7 @@ export default function DashProfile() {
     const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
     const [updateUserError, setUpdateUserError] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    // console.log(imageFileUploadProgress, imageFileUploadError);
+    const [access, setAccess] = useState({});
     const filePickerRef = useRef();
     const dispatch = useDispatch();
     const handleImageChange = (e) => {
@@ -96,7 +96,6 @@ export default function DashProfile() {
                 body: JSON.stringify(formData),
             });
             const data = await res.json();
-            console.log(data);
             if (!res.ok) {
                 dispatch(updateFailure(data.message));
                 setUpdateUserError(data.message);
@@ -147,6 +146,30 @@ export default function DashProfile() {
         }
     };
 
+
+
+    const fetchUsersAccess = async () => {
+        try {
+            const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
+                method: 'GET',
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.log(data.message);
+            } else {
+                setAccess(data.access);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
+
+    useEffect(() => {
+        if (currentUser) {
+            fetchUsersAccess();
+        }
+    }, [currentUser]);
+
     return (
         <div className='max-w-lg mx-auto p-3 w-full'>
             <h1 className='my-7 text-center font-semibold text-3xl'>Profile</h1>
@@ -178,7 +201,7 @@ export default function DashProfile() {
                     {loading ? 'Loading...' : 'Update'}
                 </Button>
                 {
-                    currentUser.canPost && (
+                    access.postAceess && (
                         <Link to={'/create-post'}>
                             <Button
                                 type='button'

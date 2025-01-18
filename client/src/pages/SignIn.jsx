@@ -4,9 +4,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
 import OAuth from '../components/OAuth';
+import { HiEye, HiEyeOff } from 'react-icons/hi';
 
 export default function SignIn() {
     const [formData, setFormData] = useState({});
+    const [showPassword, setShowPassword] = useState(false);
     const { loading, error: errorMessage } = useSelector(state => state.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -67,14 +69,30 @@ export default function SignIn() {
                                 onChange={handleChange}
                             />
                         </div>
-                        <div>
-                            <Label value='Your password' />
-                            <TextInput
-                                type='password'
-                                placeholder='********'
-                                id='password'
-                                onChange={handleChange}
-                            />
+                        <div className="max-w-md">
+                            <div className="mb-2 block">
+                                <Label htmlFor="password" value="Your password" />
+                            </div>
+                            <div className="relative">
+                                <TextInput
+                                    id="password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder="********"
+                                    required
+                                    onChange={handleChange}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500   focus:outline-none z-10"
+                                >
+                                    {showPassword ? (
+                                        <HiEye className="h-5 w-5" />
+                                    ) : (
+                                        <HiEyeOff className="h-5 w-5" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
                         <Button
                             gradientDuoTone='purpleToPink' type='submit' disabled={loading}>
