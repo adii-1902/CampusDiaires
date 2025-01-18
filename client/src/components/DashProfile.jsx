@@ -148,27 +148,27 @@ export default function DashProfile() {
 
 
 
-    const fetchUsersAccess = async () => {
-        try {
-            const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
-                method: 'GET',
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                console.log(data.message);
-            } else {
-                setAccess(data.access);
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-    };
+    // const fetchUsersAccess = async () => {
+    //     try {
+    //         const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
+    //             method: 'GET',
+    //         });
+    //         const data = await res.json();
+    //         if (!res.ok) {
+    //             console.log(data.message);
+    //         } else {
+    //             setAccess(data.access);
+    //         }
+    //     } catch (error) {
+    //         console.log(error.message);
+    //     }
+    // };
 
-    useEffect(() => {
-        if (currentUser) {
-            fetchUsersAccess();
-        }
-    }, [currentUser]);
+    // useEffect(() => {
+    //     if (currentUser) {
+    //         fetchUsersAccess();
+    //     }
+    // }, [currentUser]);
 
     return (
         <div className='max-w-lg mx-auto p-3 w-full'>
@@ -201,7 +201,7 @@ export default function DashProfile() {
                     {loading ? 'Loading...' : 'Update'}
                 </Button>
                 {
-                    access.postAceess && (
+                    currentUser.canPost && (
                         <Link to={'/create-post'}>
                             <Button
                                 type='button'
