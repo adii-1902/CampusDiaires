@@ -9,7 +9,7 @@ export default function DashUsers() {
     const [showMore, setShowMore] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [userIdToDelete, setUserIdToDelete] = useState('');
-    const [access, setAccess] = useState({});
+    // const [access, setAccess] = useState({});
     useEffect(() => {
         const fetchUsers = async () => {
             try {
@@ -25,10 +25,10 @@ export default function DashUsers() {
                 console.log(error.message);
             }
         };
-        if (access.adminAceess) {
+        if (currentUser.isAdmin) {
             fetchUsers();
         }
-    }, [currentUser._id, access]);
+    }, [currentUser._id]);
 
     const handleShowMore = async () => {
         const startIndex = users.length;
@@ -64,28 +64,28 @@ export default function DashUsers() {
         }
     };
 
-    const fetchUsersAccess = async () => {
-        try {
-            const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
-                method: 'GET',
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                console.log(data.message);
-            }
-            else {
-                setAccess(data.access);
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-    };
+    // const fetchUsersAccess = async () => {
+    //     try {
+    //         const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
+    //             method: 'GET',
+    //         });
+    //         const data = await res.json();
+    //         if (!res.ok) {
+    //             console.log(data.message);
+    //         }
+    //         else {
+    //             setAccess(data.access);
+    //         }
+    //     } catch (error) {
+    //         console.log(error.message);
+    //     }
+    // };
 
-    useEffect(() => {
-        if (currentUser) {
-            fetchUsersAccess();
-        }
-    }, [currentUser]);
+    // useEffect(() => {
+    //     if (currentUser) {
+    //         fetchUsersAccess();
+    //     }
+    // }, [currentUser]);
 
     const handleTogglePostAccess = async (userId) => {
         try {
@@ -107,7 +107,7 @@ export default function DashUsers() {
     return (
         <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
             {
-                access.adminAceess && users.length > 0 ? (
+                currentUser.isAdmin && users.length > 0 ? (
                     <>
 
                         <Table hoverable className='shadow-md'>

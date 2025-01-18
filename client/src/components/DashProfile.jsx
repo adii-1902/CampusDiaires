@@ -21,7 +21,7 @@ export default function DashProfile() {
     const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
     const [updateUserError, setUpdateUserError] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    const [access, setAccess] = useState({});
+    // const [access, setAccess] = useState({});
     const filePickerRef = useRef();
     const dispatch = useDispatch();
     const handleImageChange = (e) => {

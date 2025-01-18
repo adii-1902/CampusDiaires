@@ -10,7 +10,7 @@ export default function DashPosts() {
     const [showMore, setShowMore] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [postIdToDelete, setPostIdToDelete] = useState('');
-    const [access, setAccess] = useState({});
+    // const [access, setAccess] = useState({});
     useEffect(() => {
         const fetchPosts = async () => {
             try {
@@ -26,10 +26,10 @@ export default function DashPosts() {
                 console.log(error.message);
             }
         };
-        if (access.postAceess) {
+        if (currentUser.canPost) {
             fetchPosts();
         }
-    }, [currentUser._id, access]);
+    }, [currentUser._id]);
 
     const handleShowMore = async () => {
         const startIndex = userPosts.length;
@@ -67,33 +67,33 @@ export default function DashPosts() {
         }
     };
 
-    const fetchUsersAccess = async () => {
-        try {
-            const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
-                method: 'GET',
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                console.log(data.message);
-            }
-            else {
-                setAccess(data.access);
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-    };
+    // const fetchUsersAccess = async () => {
+    //     try {
+    //         const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
+    //             method: 'GET',
+    //         });
+    //         const data = await res.json();
+    //         if (!res.ok) {
+    //             console.log(data.message);
+    //         }
+    //         else {
+    //             setAccess(data.access);
+    //         }
+    //     } catch (error) {
+    //         console.log(error.message);
+    //     }
+    // };
 
-    useEffect(() => {
-        if (currentUser) {
-            fetchUsersAccess();
-        }
-    }, [currentUser]);
+    // useEffect(() => {
+    //     if (currentUser) {
+    //         fetchUsersAccess();
+    //     }
+    // }, [currentUser]);
 
     return (
         <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
             {
-                access.postAceess && userPosts.length > 0 ? (
+                currentUser.canPost && userPosts.length > 0 ? (
                     <>
                         <Table hoverable className='shadow-md'>
                             <Table.Head>

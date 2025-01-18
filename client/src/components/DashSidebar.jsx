@@ -11,7 +11,7 @@ export default function DashSidebar() {
     const dispatch = useDispatch();
     const location = useLocation();
     const { currentUser } = useSelector((state) => state.user);
-    const [access, setAccess] = useState({});
+    // const [access, setAccess] = useState({});
     const [tab, setTab] = useState('');
     useEffect(() => {
         const urlParams = new URLSearchParams(location.search)
@@ -38,28 +38,28 @@ export default function DashSidebar() {
         }
     };
 
-    const fetchUsersAccess = async () => {
-        try {
-            const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
-                method: 'GET',
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                console.log(data.message);
-            }
-            else {
-                setAccess(data.access);
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-    };
+    // const fetchUsersAccess = async () => {
+    //     try {
+    //         const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
+    //             method: 'GET',
+    //         });
+    //         const data = await res.json();
+    //         if (!res.ok) {
+    //             console.log(data.message);
+    //         }
+    //         else {
+    //             setAccess(data.access);
+    //         }
+    //     } catch (error) {
+    //         console.log(error.message);
+    //     }
+    // };
 
-    useEffect(() => {
-        if (currentUser) {
-            fetchUsersAccess();
-        }
-    }, [currentUser]);
+    // useEffect(() => {
+    //     if (currentUser) {
+    //         fetchUsersAccess();
+    //     }
+    // }, [currentUser]);
 
     return (
         <Sidebar className='w-full md:w-56'>
@@ -67,7 +67,7 @@ export default function DashSidebar() {
 
                 <Sidebar.ItemGroup className='flex flex-col gap-1'>
                     {
-                        currentUser && access.adminAceess && (
+                        currentUser && currentUser.isAdmin && (
                             <Link to={'/dashboard?tab=dash'}>
                                 <Sidebar.Item
                                     active={tab === 'dash' || !tab}
@@ -80,12 +80,12 @@ export default function DashSidebar() {
                         )
                     }
                     <Link to='/dashboard?tab=profile'>
-                        <Sidebar.Item active={tab === 'profile'} icon={HiUser} label={access.adminAceess ? 'Admin' : 'User'} labelColor='dark' as='div'>
+                        <Sidebar.Item active={tab === 'profile'} icon={HiUser} label={currentUser.isAdmin ? 'Admin' : 'User'} labelColor='dark' as='div'>
                             Profile
                         </Sidebar.Item>
                     </Link>
                     {
-                        access.postAceess && (<Link to='/dashboard?tab=posts'>
+                        currentUser.canPost && (<Link to='/dashboard?tab=posts'>
                             <Sidebar.Item
                                 active={tab === 'posts'}
                                 icon={HiDocumentText}
@@ -95,7 +95,7 @@ export default function DashSidebar() {
                         </Link>)
                     }
                     {
-                        access.adminAceess && (<Link to='/dashboard?tab=allposts'>
+                        currentUser.isAdmin && (<Link to='/dashboard?tab=allposts'>
                             <Sidebar.Item
                                 active={tab === 'allposts'}
                                 icon={HiDocumentText}
@@ -105,7 +105,7 @@ export default function DashSidebar() {
                         </Link>)
                     }
                     {
-                        access.adminAceess && (
+                        currentUser.isAdmin && (
                             <>
                                 <Link to='/dashboard?tab=users'>
                                     <Sidebar.Item

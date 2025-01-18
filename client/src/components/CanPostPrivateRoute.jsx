@@ -4,36 +4,36 @@ import { Outlet, Navigate, useNavigate } from 'react-router-dom';
 
 export default function CanPostPrivateRoute() {
     const { currentUser } = useSelector((state) => state.user);
-    const [access, setAccess] = useState({});
+    // const [access, setAccess] = useState({});
     const navigate = useNavigate();
 
-    const fetchUsersAccess = async () => {
-        try {
-            const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
-                method: 'GET',
-            });
-            const data = await res.json();
-            if (res.ok) {
-                setAccess(data.access);
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-    };
+    // const fetchUsersAccess = async () => {
+    //     try {
+    //         const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
+    //             method: 'GET',
+    //         });
+    //         const data = await res.json();
+    //         if (res.ok) {
+    //             setAccess(data.access);
+    //         }
+    //     } catch (error) {
+    //         console.log(error.message);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     if (currentUser) {
+    //         fetchUsersAccess();
+    //     }
+    // }, [currentUser]);
 
     useEffect(() => {
-        if (currentUser) {
-            fetchUsersAccess();
-        }
-    }, [currentUser]);
-
-    useEffect(() => {
-        if (currentUser && access.postAceess !== undefined) {
-            if (!access.postAceess) {
+        if (currentUser && currentUser.canPost !== undefined) {
+            if (!currentUser.canPost) {
                 navigate('/sign-in');
             }
         }
-    }, [access, currentUser, navigate]);
+    }, [currentUser, navigate]);
 
-    return currentUser && access.postAceess ? <Outlet /> : null;
+    return currentUser && currentUser.canPost ? <Outlet /> : null;
 }
