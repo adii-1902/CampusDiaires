@@ -16,7 +16,7 @@ export default function SignUp() {
     });
     const [errorMessage, setErrorMessage] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [steps, setSteps] = useState(3);
+    const [steps, setSteps] = useState(1);
     const [responseMessage, setResponseMessage] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
