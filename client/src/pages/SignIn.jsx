@@ -105,6 +105,11 @@ export default function SignIn() {
                                 ) : 'Sign In'
                             }
                         </Button>
+                        <div className="flex items-center justify-center space-x-2 mt-4">
+                            <hr className="flex-1 border-gray-300 dark:border-gray-700" />
+                            <span className="px-4 text-gray-600 dark:text-gray-400">Or</span>
+                            <hr className="flex-1 border-gray-300 dark:border-gray-700" />
+                        </div>
                         <OAuth />
                     </form>
                     <div className='flex gap-2 text-sm mt-5'>

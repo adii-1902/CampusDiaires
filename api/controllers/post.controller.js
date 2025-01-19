@@ -1,6 +1,7 @@
 import Post from "../models/post.model.js";
 import { errorHandler } from "../utils/error.js";
 import { sendEmail } from '../utils/emailService.js';
+import Comment from "../models/comment.model.js";
 
 export const create = async (req, res, next) => {
     if (!req.user.canPost) {
@@ -189,11 +190,16 @@ export const getposts = async (req, res, next) => {
 
 export const deletepost = async (req, res, next) => {
     if ((!req.user.canPost && !req.user.isAdmin) || req.user.id !== req.params.userId) {
-        return next(403, 'You are not allowed to delete this post.');
+        return next(errorHandler(403, 'You are not allowed to delete this post.'));
     }
     try {
+        // Delete all comments associated with the post
+        await Comment.deleteMany({ postId: req.params.postId });
+
+        // Delete the post
         await Post.findByIdAndDelete(req.params.postId);
-        res.status(200).json('The post has been deleted');
+
+        res.status(200).json('The post and its comments have been deleted');
     } catch (error) {
         next(error);
     }
