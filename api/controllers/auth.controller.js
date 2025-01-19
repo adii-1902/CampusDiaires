@@ -1,11 +1,10 @@
 import jwt from 'jsonwebtoken';
 import bcryptjs from "bcryptjs";
-
 import User from "../models/user.model.js";
 import { errorHandler } from "../utils/error.js";
 import { sendEmail } from '../utils/emailService.js';
 
-
+/* */
 export const signup = async (req, res, next) => {
     const { step, email, otp, username, password } = req.body;
 
@@ -179,6 +178,7 @@ export const signup = async (req, res, next) => {
     }
 };
 
+/* */
 export const signin = async (req, res, next) => {
     const { email, password } = req.body;
 
@@ -205,18 +205,19 @@ export const signin = async (req, res, next) => {
     }
 }
 
+/*  */
 export const google = async (req, res, next) => {
     const { email, name, googlePhotoUrl } = req.body;
     try {
         const user = await User.findOne({ email });
         if (user) {
+            await User.updateOne({ email }, { isRegistered: true });
             const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin, canPost: user.canPost }, process.env.JWT_SECRET);
             const { password, ...rest } = user._doc;
             res.status(200).cookie('access_token', token, {
                 httpOnly: true,
             }).json(rest);
-        }
-        else {
+        } else {
             const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
             const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
             const newUser = new User({
@@ -224,6 +225,7 @@ export const google = async (req, res, next) => {
                 email,
                 password: hashedPassword,
                 profilePicture: googlePhotoUrl,
+                isRegistered: true,
             });
             await newUser.save();
             const token = jwt.sign({ id: newUser._id, isAdmin: newUser.isAdmin, canPost: newUser.canPost }, process.env.JWT_SECRET);
