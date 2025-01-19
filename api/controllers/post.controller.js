@@ -3,6 +3,7 @@ import { errorHandler } from "../utils/error.js";
 import { sendEmail } from '../utils/emailService.js';
 import Comment from "../models/comment.model.js";
 
+/* */
 export const create = async (req, res, next) => {
     if (!req.user.canPost) {
         return next(errorHandler(403, 'You are not allowed to create a post'));
@@ -107,6 +108,7 @@ export const create = async (req, res, next) => {
     }
 };
 
+/* */
 export const getallposts = async (req, res, next) => {
     try {
         const startIndex = parseInt(req.query.startIndex) || 0;
@@ -124,6 +126,7 @@ export const getallposts = async (req, res, next) => {
     }
 };
 
+/* */
 export const getposts = async (req, res, next) => {
     try {
 
@@ -188,6 +191,7 @@ export const getposts = async (req, res, next) => {
     }
 };
 
+/* */
 export const deletepost = async (req, res, next) => {
     if ((!req.user.canPost && !req.user.isAdmin) || req.user.id !== req.params.userId) {
         return next(errorHandler(403, 'You are not allowed to delete this post.'));
@@ -205,6 +209,7 @@ export const deletepost = async (req, res, next) => {
     }
 };
 
+/* */
 export const updatepost = async (req, res, next) => {
     if ((!req.user.canPost && !req.user.isAdmin) || req.user.id !== req.params.userId) {
         return next(errorHandler(403, 'You are not allowed to update this post.'));

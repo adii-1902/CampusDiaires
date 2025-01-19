@@ -10,7 +10,7 @@ export default function DashComments() {
     const [showMore, setShowMore] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [commentIdToDelete, setCommentIdToDelete] = useState('');
-    // const [access, setAccess] = useState({});
+    const [access, setAccess] = useState({});
     useEffect(() => {
         const fetchComments = async () => {
             try {
@@ -26,10 +26,10 @@ export default function DashComments() {
                 console.log(error.message);
             }
         };
-        if (currentUser.isAdmin) {
+        if (access.adminAceess) {
             fetchComments();
         }
-    }, [currentUser._id]);
+    }, [currentUser._id, access]);
 
     const handleShowMore = async () => {
         const startIndex = comments.length;
@@ -66,33 +66,33 @@ export default function DashComments() {
         }
     };
 
-    // const fetchUsersAccess = async () => {
-    //     try {
-    //         const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
-    //             method: 'GET',
-    //         });
-    //         const data = await res.json();
-    //         if (!res.ok) {
-    //             console.log(data.message);
-    //         }
-    //         else {
-    //             setAccess(data.access);
-    //         }
-    //     } catch (error) {
-    //         console.log(error.message);
-    //     }
-    // };
+    const fetchUsersAccess = async () => {
+        try {
+            const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
+                method: 'GET',
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.log(data.message);
+            }
+            else {
+                setAccess(data.access);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
 
-    // useEffect(() => {
-    //     if (currentUser) {
-    //         fetchUsersAccess();
-    //     }
-    // }, [currentUser]);
+    useEffect(() => {
+        if (currentUser) {
+            fetchUsersAccess();
+        }
+    }, [currentUser]);
 
     return (
         <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
             {
-                currentUser.isAdmin && comments.length > 0 ? (
+                access.adminAceess && comments.length > 0 ? (
                     <>
                         <Table hoverable className='shadow-md'>
                             <Table.Head>

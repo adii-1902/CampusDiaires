@@ -60,36 +60,36 @@ export default function DashboardComponent() {
             }
 
         }
-        if (currentUser.isAdmin) {
+        if (access.adminAceess) {
             fetchUsers();
             fetchPosts();
             fetchComments();
         }
+    }, [currentUser, access]);
+
+
+    const fetchUsersAccess = async () => {
+        try {
+            const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
+                method: 'GET',
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.log(data.message);
+            }
+            else {
+                setAccess(data.access);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
+
+    useEffect(() => {
+        if (currentUser) {
+            fetchUsersAccess();
+        }
     }, [currentUser]);
-
-
-    // const fetchUsersAccess = async () => {
-    //     try {
-    //         const res = await fetch(`/api/user/getUserAccess/${currentUser._id}`, {
-    //             method: 'GET',
-    //         });
-    //         const data = await res.json();
-    //         if (!res.ok) {
-    //             console.log(data.message);
-    //         }
-    //         else {
-    //             setAccess(data.access);
-    //         }
-    //     } catch (error) {
-    //         console.log(error.message);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     if (currentUser) {
-    //         fetchUsersAccess();
-    //     }
-    // }, [currentUser]);
     return (
         <div className='p-3 md:mx-auto'>
             <div className='flex flex-wrap gap-4 justify-center'>

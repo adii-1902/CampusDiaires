@@ -2,10 +2,12 @@ import User from "../models/user.model.js";
 import { errorHandler } from "../utils/error.js";
 import bcryptjs from 'bcryptjs';
 
+/* */
 export const test = (req, res) => {
     res.json({ message: 'API is working!' });
 };
 
+/* */
 export const updateUser = async (req, res, next) => {
     if (req.user.id !== req.params.userId) {
         return next(errorHandler(403, 'You are not allowed to update this user.'));
@@ -47,6 +49,7 @@ export const updateUser = async (req, res, next) => {
 
 };
 
+/* */
 export const deleteUser = async (req, res, next) => {
     if (!req.user.isAdmin && req.user.id !== req.params.userId) {
         return next(errorHandler(403, 'You are not allowed to delete this user.'));
@@ -59,6 +62,7 @@ export const deleteUser = async (req, res, next) => {
     }
 };
 
+/* */
 export const signout = async (req, res, next) => {
     try {
         res.clearCookie('access_token').status(200).json('User has been signed out');
@@ -67,6 +71,7 @@ export const signout = async (req, res, next) => {
     }
 };
 
+/* */
 export const getusers = async (req, res, next) => {
     if (!req.user.isAdmin) {
         return next(errorHandler(403, 'You are not allowed to see all users'));
@@ -102,6 +107,7 @@ export const getusers = async (req, res, next) => {
     }
 };
 
+/* */
 export const getUser = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.userId);
@@ -115,7 +121,7 @@ export const getUser = async (req, res, next) => {
     }
 };
 
-
+/* */
 export const getUserAccess = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.userId);
@@ -141,6 +147,7 @@ export const getUserAccess = async (req, res, next) => {
     }
 };
 
+/* */
 export const updateUserAccess = async (req, res, next) => {
     if (!req.user.isAdmin) {
         return next(errorHandler(403, 'You are not allowed to update user access.'));
