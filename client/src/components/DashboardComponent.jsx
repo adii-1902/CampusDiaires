@@ -15,6 +15,7 @@ export default function DashboardComponent() {
     const [lastMonthComments, setLastMonthComments] = useState(0);
     const [lastMonthPosts, setLastMonthPosts] = useState(0);
     const { currentUser } = useSelector((state) => state.user);
+
     const [access, setAccess] = useState({});
 
     useEffect(() => {
